@@ -45,7 +45,7 @@
       </transition>
 
 
-      <InformationUser :UID="userInfoUID" />
+      <!-- <InformationUser :UID="userInfoUID" /> -->
       <!-- <div class="layout-info-contact"></div> -->
     </div>
 </template>
@@ -53,14 +53,14 @@
 <script>
 
 import MessagesContainer from '../components/Messages-container.vue';
-import InformationUser from '../components/InfoUser.vue';
+// import InformationUser from '../components/InfoUser.vue';
 import { db } from '../db.js';
 
 export default {
     name: 'chat-messages',
     components: {
         MessagesContainer,
-        InformationUser,
+        // InformationUser,
     },
     data() {
         return {
@@ -196,7 +196,8 @@ export default {
 
 .chat-messages-page{
   display: grid;
-  grid-template-columns: 1fr 3fr 1fr;
+  /* grid-template-columns: 1fr 3fr 1fr; */
+  grid-template-columns: 1fr 3fr;
   /* grid-template-columns: minmax(min(100%, 1fr), 1fr) minmax(min(100%, 3fr), 3fr) minmax(min(100%, 1fr), 1fr); */
   height: 100vh;
   overflow: hidden;

@@ -23,7 +23,7 @@
             <p><font-awesome-icon icon="exclamation-circle"/> {{ msgError }}</p>
           </div>
 
-          <RegisterFacebookButton />
+          <!-- <RegisterFacebookButton /> -->
 
         </div>
       </div>
@@ -40,14 +40,14 @@
 
 <script>
 import RegisterGoogleButton from './Register.vue';
-import RegisterFacebookButton from '../components/RegisterFacebook.vue';
+// import RegisterFacebookButton from '../components/RegisterFacebook.vue';
 
 export default {
   name: 'Home',
   components: {
     // GoogleLogin,
     RegisterGoogleButton,
-    RegisterFacebookButton,
+    // RegisterFacebookButton,
   },
   data() {
     return {
