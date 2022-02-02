@@ -1,57 +1,71 @@
 <template>
   <div class="row messages" id="messages">
     <div v-for="(message, id) in messages" :key="id">
-        <div v-if="(message.type !== 'notify')">
+        <!-- <div v-if="(message.type !== 'notify')">
           <div v-if="senders(message.sender) && (message.sender !== username)" class="col-12">
             <div class="message user-sender">{{ message.sender }}</div>
           </div>
-        </div>
+        </div> -->
 
-        <div v-if="message.type == 'notify'" class="col-12 justify-content-center">
+        <!-- <div v-if="message.type == 'notify'" class="col-12 justify-content-center">
           <div class="message notify">{{ message.msg }}</div>
-        </div>      
-        <div v-else-if="message.sender == username" class="col-12 justify-content-end">
-          <div class="message sender">{{ message.msg }}</div>
+        </div>       -->
+        <!-- <div v-if="message.sender == senderID" class="col-12 justify-content-end">
+          <div class="message sender">{{ message.message }}</div>
+          <p>{{ new Date(message.timestamp) }}</p>
         </div>             
         <div v-else class="col-12">
-          <div class="message">{{ message.msg }}</div>
-        </div>            
+          <div class="message">{{ message.message }}</div>
+        </div>             -->
+        <Message :message="message" :senderID="senderID" />
     </div> 
   </div>
 </template>
 
 <script>
+import { db } from '../db';
+const conversations = db.database().ref('chats');
+import Message from './Message.vue';
+
 export default {
   name: 'Messages',
-  data() {
-    return {
-      last_sender: '',
-    }
-  },
-  methods: {
-    senders: function(sender){
-      if(sender != this.last_sender){
-        this.last_sender = sender;
-        return true;
-      }
-      else{
-        // this.last_sender = sender;
-        return false;
-      }
-    }    
+  components : {
+    Message,
   },
   props: {
-    messages: [],
-    username: String,
+    conversationID : String,
+    senderID : String,
   },
-  watch: {
-    messages: function () {
+  data() {
+    return {
+      // last_sender: '',
+      messages : [],
+      // msgs : [],
+    }
+  },
+  watch : {
+    conversationID : function(){
+      console.log('\nCAMBIO DE CHAT\n');
+      alert('CAMBIO DE CHAT');
+      this.$rtdbBind('messages', conversations.child(this.conversationID).child('conversation'));
+    },
+    messages : function () {
+      this.scrollToEnd();
+    }
+
+  },
+  mounted(){
+    this.$rtdbBind('messages', conversations.child(this.conversationID).child('conversation'));
+  },
+  methods : {
+    scrollToEnd : function() {
       this.$nextTick(function () {
         var element = document.getElementById('messages');
-        element.scrollTo(0, element.scrollHeight);
+        element.scrollTop = element.scrollHeight;
       })
-    },    
-  }
+    },
+  },
+
 }
 </script>
 
@@ -61,16 +75,25 @@ export default {
   background: #fefefe;
   /* background: tomato; */
   display: inline-flex;
-  padding: 10px;
+  padding: 30px;
   width: 100%;
   height: auto;
   min-height: 40px;
-  max-height: 77vh;
+  max-height: 85%;
   overflow-x: hidden;
   overflow-y: auto;
-  transform: translateY(-15px);
   border-radius: 20px;
 }
+.messages::-webkit-scrollbar {
+    width: 1px;     /* Tamaño del scroll en vertical */
+    height: 10px;    /* Tamaño del scroll en horizontal */
+    display: none;  
+}
+.messages::-webkit-scrollbar-thumb {
+    background: var(--bg-color-orange);
+    border-radius: 20px;
+}
+
 .messages .col-12{
     display: flex;
     font-family: 'Poppins', sans-serif; 

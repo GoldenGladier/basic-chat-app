@@ -13,9 +13,6 @@ const routes = [
   {
     path: '/about',
     name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
@@ -24,17 +21,16 @@ const routes = [
     props: true,
     component: () => import(/* webpackChunkName: "contacts" */ '../views/Contacts.vue')
   },    
-  // {
-  //   path: '/chat/:addressee/:id',
-  //   name: 'Chat',
-  //   props: true,
-  //   component: () => import(/* webpackChunkName: "chat" */ '../views/Chat-Messages.vue')
-  // },
+
   {
-    path: '/chat/:username',
+    // path: '/chat/:username',
+    path: '/chat',
     name: 'Chat',
     props: true,
-    component: () => import(/* webpackChunkName: "chat" */ '../views/Chat-Messages.vue')
+    component: () => import(/* webpackChunkName: "chat" */ '../views/Chat-Messages.vue'),
+    meta: {
+      requiresAuth: true
+    },
   }    
 ]
 
@@ -43,5 +39,19 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+import firebase from "firebase/app";
+import 'firebase/app';
+import 'firebase/auth';
+
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(x => x.meta.requiresAuth);
+  if(requiresAuth) {
+    firebase.auth().onAuthStateChanged( (user) => {
+      if (!user) next('/')
+      else next();
+    })
+  } else next()
+});
 
 export default router

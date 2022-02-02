@@ -9,6 +9,15 @@
 </template>
 
 <style>
+
+:root {
+  --bg-color-orange: #fd883a;
+  --bg-color-dark: #2c3e50;
+  --bg-color-gray: #f7f2f2;
+  --bg-color-gray-low: #fcfcfc;
+  --txt-color-gray: #B2B1B9;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -40,5 +49,20 @@
 
 #nav a.router-link-exact-active {
   color: #fd883a;
+}
+
+.input{
+  border: none;
+  color: #2e3c4f;
+  outline: none;
+  font-size: 12pt;
+  font-family: 'Poppins', sans-serif;
+  display: block;   
+  margin: auto;
+  border-radius: 20px;
+  margin: 10px auto;
+  padding: 8px 20px;
+  display: inline-block;
+  box-sizing: border-box; 
 }
 </style>
