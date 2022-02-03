@@ -1,5 +1,8 @@
 <template>
-    <div class="layout-messages">
+
+  <div class="layout-messages">
+
+    <div class="layaut-translucent" v-click-outside="clickoutside_closeConversation">
         <div class="addressee-information">
             <div class="img-user-container">
               <img :src="addressee.picture" :alt="addressee.name" class="addressee-img">
@@ -8,10 +11,14 @@
             </div>
             <!-- <img :src="addressee.picture" :alt="addressee.name" class="addressee-img"> -->
             <h4>{{ addressee.name }}</h4>
+
+            <button class="btn-close" title="Close conversation" @click="closeConversation"><i class="bi bi-x"></i></button>
         </div>
         <Messages v-if="conversationID" :conversationID="conversationID" :senderID="user.uid"/>
         <Postman :addresseeUID="addresseeUID" :conversationID="conversationID" :senderID="user.uid"/> 
     </div>
+
+  </div>
 </template>
 
 <script>
@@ -46,6 +53,7 @@ export default {
     }
   },
   methods : {
+    // This function get all information about the addressee
     searchAddressee : function(){
       // console.log('BUSCANDO AL DESTINATARIO');
       this.addressee = [];
@@ -58,8 +66,34 @@ export default {
       }).catch((error) => {
         console.error(error); // Mostramos errores
       });
-    }
+    },
+    // This function close the conversaction active currently 
+    closeConversation : function(){
+      this.$emit('close-conversation');
+    },
+    clickoutside_closeConversation : function(){
+      if(screen.width < 767){
+        this.$emit('close-conversation');
+      }
+    }    
+
   },
+  directives : {
+    click_outside : {
+      bind(el, binding, vnode) {
+        el.clickOutsideEvent = (event) => {
+          if (!(el === event.target || el.contains(event.target))) {
+            vnode.context[binding.expression](event);
+          }
+        };
+        document.body.addEventListener("click", el.clickOutsideEvent);
+      },
+      unbind(el) {
+        document.body.removeEventListener("click", el.clickOutsideEvent);
+      },
+    },
+
+  }
 
 }
 </script>
@@ -83,9 +117,32 @@ export default {
     border-bottom: solid 2px var(--bg-color-gray);
     width: 95%;
     margin: auto;
+
+    background: #fefefe;
+    position: relative;
 }
 .addressee-information > *{
     margin: 0;
+}
+
+.btn-close{
+  padding: 15px;
+  position: absolute;
+  right: 0;
+}
+.btn-close > *{
+  color: #fd883a !important;
+}
+.btn-close:active, .btn-close:focus{
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.btn-close:active > i, .btn-close:focus > i{
+  color: var(--bg-color-orange) !important;
+}
+.btn-close i::before{
+  content: none !important;
 }
 
 .img-user-container{
@@ -115,6 +172,28 @@ export default {
     position: absolute;
     right: 0;
     bottom: 0;
+}
+
+@media only screen and (max-width: 767px) {
+  .layout-messages{
+    display: block;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+    background: tomato;
+    background: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    top: 0;
+  }
+  .layaut-translucent{
+    height: 90vh;
+    background: #fefefe;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-radius: 25px 25px 0 0;
+    overflow: hidden;
+  }
 }
 
 </style>

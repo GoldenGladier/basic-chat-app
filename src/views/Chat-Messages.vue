@@ -13,7 +13,7 @@
         <ul class="contact-list">
           <li v-for="contact in contactsList" :key="contact[':key']" class="contact">
 
-            <button v-if="contact.uid != userUID" class="user-button" @click="loadConversation(contact.uid)">
+            <button v-if="contact.uid != userUID" class="user-button" @click="loadConversation(contact.uid)" :title="'Open conversation with ' + contact.name">
               <div class="img-user-container">
                 <img class="img-user" :src="contact.picture" alt="img-user.jpg">
                 <span v-if="contact.connected" class="connected-circle"></span>
@@ -27,15 +27,20 @@
           </li>
         </ul>
 
+        <button class="user-button btn-sign-out" @click="signOut">
+          <i class="bi bi-door-open-fill"></i> Sign Out
+        </button>
         <!-- / Lista de usuarios -->
       </div>
 
       <transition name="displacement">
-        <MessagesContainer v-if="addresseeUID" :addresseeUID="addresseeUID" :user="user" :conversationID="conversationID"/>
+        <MessagesContainer v-if="conversationActive == true" :addresseeUID="addresseeUID" 
+                           :user="user" :conversationID="conversationID"
+                           v-on:close-conversation="closeConversation" />
       </transition>
 
       <transition name="displacement">
-        <div v-if="!addresseeUID" class="layout-messages layout-messages-replace">
+        <div v-if="!conversationActive" class="layout-messages layout-messages-replace">
           <div class="block-content">
             <img class="img-responsive" src="../../public/undraw_contacts.svg" alt="undraw_contacts.png">
             <h3>What is not communicated does not exist!</h3>
@@ -76,13 +81,14 @@ export default {
           // MESSAGES CONTAINER
           addresseeUID : '',
           conversationID : String,
+          conversationActive : false,
           // INFO USER CONTAINER
           userInfoUID : db.auth().currentUser.uid,
         }
     }, 
     firebase : { // Usuarios
       contactsList :  db.database().ref("users/"),
-      chats : db.database().ref("chats/"),
+      chats : db.database().ref("chats/"),  
     },
     methods: {
         searchMyUser : function () {
@@ -102,9 +108,11 @@ export default {
             this.searchMyUser(); // Buscamos el usuario actual
           }
 
-          if(this.myRef.chats){ // Revisamos que ya exista el arreglo de chats
+          if(this.myRef.chats && this.myRef.chats[addresseeUID].idConversation){ // Revisamos que ya exista el arreglo de chats
             this.conversationID = this.myRef.chats[addresseeUID].idConversation;
             // console.log('MASTER: ' + this.conversationID);
+            this.conversationActive = true;    
+            console.log('Conversation: ' + this.conversationActive);   
           }
           else{ // En caso de que no lo creamos
             var conversationRef = new Object();
@@ -128,12 +136,33 @@ export default {
                 // console.log('Conversation ref add in addressee!')
             });
 
-            this.conversationID = conversationRef.idConversation;           
+            this.conversationID = conversationRef.idConversation;  
+            this.conversationActive = true;    
+            console.log('Conversation: ' + this.conversationActive);     
           } // END IF
         }, // END LOAD CONVERSATION
 
+        // This function close the conversaction active currently 
+        // when an event 'close-conversation' is received from Messages-container component
+        closeConversation(){
+          this.conversationID = null;
+          this.addresseeUID = null;
+          this.conversationActive = false;
+        },
+
         focusInputSearchFriends(){
           this.$refs.inputSearchFriends.focus();
+        },
+
+        signOut() {
+          
+          db.auth().signOut().then(() => {
+            // Sign-out successful.
+            this.$router.replace('/'); // Redirigimos al inicio
+          }).catch((error) => {
+            // An error happened.
+            console.log('ERROR: ' + error);
+          });
         }
 
     },
@@ -159,6 +188,9 @@ export default {
 
 .displacement-enter-active {
   animation: displacement-in .5s;
+}
+.displacement-leave-active {
+  animation: displacement-in reverse .5s;
 }
 
 @keyframes displacement-in {
@@ -205,6 +237,7 @@ export default {
 
 .layout-contacts{
   background: var(--bg-color-gray-low);
+  position: relative;
 }
 .layout-contacts .info-user{
   /* background: tomato; */
@@ -338,6 +371,24 @@ ul.contact-list{
   color: var(--bg-color-orange);
 }
 
+.btn-sign-out{
+  width: 85%;
+  height: 52px;
+  margin: auto;
+  border-top: 1px solid #dbd8e3;
+  background: var(--bg-color-gray-low);
+  color: var(--txt-color-gray);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.btn-sign-out i{
+  font-size: 2rem;
+  margin: 0 0.3rem;
+  margin-bottom: 1.1rem;
+}
+
 .layout-messages {
   grid-column-start: 2;
 }
@@ -374,7 +425,7 @@ ul.contact-list{
 }
 
 @media only screen and (max-width: 767px) {
-  .layout-messages, .layout-info-contact{
+  .layout-info-contact{
     display: none;
   }
   .chat-messages-page{
@@ -385,6 +436,25 @@ ul.contact-list{
     width: 100%;
     height: 100%;
   }
+
+  .layout-messages{
+    display: block;
+  }
+
+  /* changing animation */
+
+  @keyframes displacement-in {
+    0% {
+      transform: scale(0.2) translateY(300%);
+    }
+    50% {
+      transform: scale(0.4) translateY(60%);
+    }
+    100% {
+      transform: scale(1) translateY(0);
+    }
+  }  
+  
 }
 
 /* * * * * * * * * * */

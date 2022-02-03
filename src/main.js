@@ -13,4 +13,5 @@ new Vue({
   render: h => h(App)
 }).$mount('#app')
 
-
+import vClickOutside from 'v-click-outside';  
+Vue.use(vClickOutside);  

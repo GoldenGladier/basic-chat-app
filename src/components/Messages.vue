@@ -45,8 +45,8 @@ export default {
   },
   watch : {
     conversationID : function(){
-      console.log('\nCAMBIO DE CHAT\n');
-      alert('CAMBIO DE CHAT');
+      console.log('\nCAMBIO DE CHAT: ' + this.conversationID + '\n');
+      // alert('CAMBIO DE CHAT');
       this.$rtdbBind('messages', conversations.child(this.conversationID).child('conversation'));
     },
     messages : function () {

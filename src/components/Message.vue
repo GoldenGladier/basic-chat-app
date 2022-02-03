@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div title="Click to see additional data of this message">
 
       <div v-if="message.sender == senderID">
         <div class="col-12 justify-content-end">
