@@ -78,22 +78,6 @@ export default {
     }    
 
   },
-  directives : {
-    click_outside : {
-      bind(el, binding, vnode) {
-        el.clickOutsideEvent = (event) => {
-          if (!(el === event.target || el.contains(event.target))) {
-            vnode.context[binding.expression](event);
-          }
-        };
-        document.body.addEventListener("click", el.clickOutsideEvent);
-      },
-      unbind(el) {
-        document.body.removeEventListener("click", el.clickOutsideEvent);
-      },
-    },
-
-  }
 
 }
 </script>
@@ -104,6 +88,16 @@ export default {
   position: relative;
   height: 100vh;
   /* overflow: hidden; */
+}
+
+.layaut-translucent{
+  height: 100%;
+  background: #fefefe;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-radius: 25px 25px 0 0;
+  overflow: hidden;
 }
 
 .addressee-information{
